@@ -5,9 +5,9 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.student_id.label }}<br>
-            {{ form.student_id(size=32) }}<br>
-            {% for error in form.student_id.errors %}
+            {{ form.identity.label }}<br>
+            {{ form.identity(size=32) }}<br>
+            {% for error in form.identity.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
@@ -25,6 +25,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        <p>{{ form.editor() }} {{ form.editor.label }}</p>
         <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}<br>

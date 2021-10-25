@@ -8,14 +8,12 @@
             <a href="{{ url_for('index') }}">Home</a>
             
             {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Student Login</a>
-            <a href="{{ url_for('adminlogin') }}">Admin Login</a>
+            <a href="{{ url_for('login') }}">Login</a>
+
             {% else %}
                 {% if current_user.editor %}
                 <a href="{{ url_for('register') }}">Register</a>
-                <a href="{{ url_for('adminregister') }}">Admin Register</a>
-                <a href="{{ url_for('studentdelete') }}">Delete Student</a>
-                <a href="{{ url_for('admindelete') }}">Delete Admin</a>
+                <a href="{{ url_for('userdelete') }}">Delete</a>
                 {% else %}
                 {% endif %}
             <a href="{{ url_for('logout') }}">Logout</a>

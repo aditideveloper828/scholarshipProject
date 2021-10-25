@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, jsonify, url_for, request
 from qrScanApp import application
-from qrScanApp.forms import LoginForm, RegistrationForm, AdminLoginForm, AdminRegistrationForm, DeleteForm, AdminDeleteForm
+from qrScanApp.forms import LoginForm, RegistrationForm, DeleteForm
 from qrScanApp import storage
 from flask_login import current_user, login_user, logout_user, login_required
-from qrScanApp.models import User, Log, Code, Admin
+from qrScanApp.models import User, Log, Code
 from werkzeug.urls import url_parse
 
 
@@ -46,7 +46,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(student_id=form.student_number.data).first()
+        user = User.query.filter_by(identity=form.identity.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
@@ -66,61 +66,22 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(student_id=form.student_id.data, first_name=form.first_name.data, last_name=form.last_name.data)
+        user = User(identity=form.identity.data, first_name=form.first_name.data, last_name=form.last_name.data, editor=form.editor.data)
         user.set_password(form.password.data)
         storage.session.add(user)
         storage.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        return redirect(url_for('register'))
     return render_template('register.html', title='Register', form=form)
 
-@application.route('/adminlogin', methods=['GET', 'POST'])
-def adminlogin():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = AdminLoginForm()
-    if form.validate_on_submit():
-        admin = Admin.query.filter_by(teacher_code=form.teacher_code.data).first()
-        if admin is None or not admin.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('adminlogin'))
-        login_user(admin, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
-    return render_template('adminlogin.html', title='Admin Login', form=form)
-
-@application.route('/adminregister', methods=['GET', 'POST'])
-def adminregister():
-    form = AdminRegistrationForm()
-    if form.validate_on_submit():
-        admin = Admin(teacher_code=form.teacher_code.data, first_name=form.first_name.data, last_name=form.last_name.data)
-        admin.set_password(form.password.data)
-        storage.session.add(admin)
-        storage.session.commit()
-        return redirect(url_for('adminlogin'))
-    return render_template('adminregister.html', title='Admin Register', form=form)
-
-@application.route('/studentdelete', methods=['GET', 'POST'])
-def studentdelete():
+@application.route('/userdelete', methods=['GET', 'POST'])
+def userdelete():
     form = DeleteForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(student_id=form.student_id.data).first()
+        user = User.query.filter_by(identity=form.identity.data).first()
         storage.session.delete(user)
         storage.session.commit()
-        return redirect(url_for('studentdelete'))
-    return render_template('delete.html', title='Delete Student', form=form)
-
-@application.route('/admindelete', methods=['GET', 'POST'])
-def admindelete():
-    form = AdminDeleteForm()
-    if form.validate_on_submit():
-        admin = Admin.query.filter_by(teacher_code=form.teacher_code.data).first()
-        storage.session.delete(admin)
-        storage.session.commit()
-        return redirect(url_for('admindelete'))
-    return render_template('admindelete.html', title='Delete Admin', form=form)
+        return redirect(url_for('userdelete'))
+    return render_template('delete.html', title='Delete', form=form)
 
 @application.errorhandler(500)
 def internal_error(error):
