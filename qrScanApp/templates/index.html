@@ -45,74 +45,29 @@ function docReady(fn) {
     }
 }
 function senddata(code){
+    var info = `{"info":"${code}"}`;
     $.ajax({
-        type: "POST",
-        url: "/",
-        data: JSON.stringify(code),
+        method: 'POST',
+        url: "{{ url_for('trial') }}",
+        data: info,
+        dataType: 'json',
+        contentType:"application/json",
+        success: function(result){
+            alert("Unlocked!");
+        },
+        error: function (jqXHR, textStatus, errorThrown) { 
+            alert("Try Again!") 
+        }
     });
-}
-
-function printScanResult(codeId, decodedText, decodedResult) {
-	let resultSection = document.getElementById('scanned-result');
-    let tableBodyId = "scanned-result-table-body";
-    if (decodedText === "hello world"){
-        var allowed = "yes";
-    } else {
-        var allowed = "no";
-    }
-    if (!document.getElementById(tableBodyId)) {
-        let table = document.createElement("table");
-        table.className = "styled-table";
-        table.style.width = "100%";
-        resultSection.appendChild(table);
-        let theader = document.createElement('thead');
-        let trow = document.createElement('tr');
-        let th1 = document.createElement('td');
-        th1.innerText = "Count";
-        let th2 = document.createElement('td');
-        th2.innerText = "Access?";
-        let th3 = document.createElement('td');
-        th3.innerText = "Result";
-        //let th4 = document.createElement('td');
-        //th4.innerText = "Access?";
-        trow.appendChild(th1);
-        trow.appendChild(th2);
-        trow.appendChild(th3);
-        //trow.appendChild(th4);
-        theader.appendChild(trow);
-        table.appendChild(theader);
-        let tbody = document.createElement("tbody");
-        tbody.id = tableBodyId;
-        table.appendChild(tbody);
-    }
-    let tbody = document.getElementById(tableBodyId);
-    let trow = document.createElement('tr');
-    let td1 = document.createElement('td');
-    td1.innerText = `${codeId}`;
-    let td2 = document.createElement('td');
-    td2.innerText = `${allowed}`;
-    let td3 = document.createElement('td');
-    td3.innerText = `${decodedText}`;
-    //let td4 = document.creatElement('td');
-    //td4.innerText = `${allowed}`;
-    trow.appendChild(td1);
-    trow.appendChild(td2);
-    trow.appendChild(td3);
-    //trow.appendChild(td4);
-    tbody.appendChild(trow);
 }
 
 docReady(function() {
 	hljs.initHighlightingOnLoad();
 	var lastMessage;
-	var codeId = 0;
 	function onScanSuccess(decodedText, decodedResult) {
 		if (lastMessage !== decodedText) {
 			lastMessage = decodedText;
-            
-            printScanResult(codeId, decodedText, decodedResult);
             senddata(lastMessage);
-            ++codeId;
 		}
 	}
 	let html5QrcodeScanner = new Html5QrcodeScanner(
