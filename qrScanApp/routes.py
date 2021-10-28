@@ -1,11 +1,13 @@
 from flask import render_template, flash, redirect, jsonify, url_for, request
 from qrScanApp import application
-from qrScanApp.forms import LoginForm, RegistrationForm, DeleteForm
+from qrScanApp.forms import LoginForm, RegistrationForm, DeleteForm, TimeForm
 from qrScanApp import storage
 from flask_login import current_user, login_user, logout_user, login_required
 from qrScanApp.models import User, Log, Code
 from werkzeug.urls import url_parse
 
+complete_log = []
+individual = {'person':''}
 
 @application.route('/', methods=['GET', 'POST'])
 @application.route('/index', methods=['GET', 'POST'])
@@ -69,6 +71,26 @@ def userdelete():
         storage.session.commit()
         return redirect(url_for('userdelete'))
     return render_template('delete.html', title='Delete', form=form)
+
+@application.route('/time', methods=['GET', 'POST'])
+def time():
+    form = TimeForm()
+    if form.validate_on_submit():
+        all_log = Log.query.filter_by(identity=form.identity.data).all()
+        global individual
+        global complete_log
+        individual['person'] = form.identity.data
+        for log in all_log:
+            complete_log.append({'time':log.timestamp})
+            print(complete_log)
+        return redirect(url_for('display'))
+    return render_template('time.html', title='Time', form=form)
+
+@application.route('/display', methods=['GET', 'POST'])
+def display():
+    global complete_log
+    global individual
+    return render_template('display.html', title="Display", complete_log=complete_log, individual=individual)
 
 @application.errorhandler(500)
 def internal_error(error):

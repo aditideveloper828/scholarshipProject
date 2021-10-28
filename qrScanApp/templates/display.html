@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Individual: {{ individual.person }}</h1>
+    {% for log in complete_log %}
+    <div><p><b>{{ log.time }}</b></p></div>
+    {% endfor %}
+{% endblock %}
+

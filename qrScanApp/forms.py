@@ -28,3 +28,7 @@ class RegistrationForm(FlaskForm):
 class DeleteForm(FlaskForm):
     identity = StringField('Identity', validators=[DataRequired()])
     submit = SubmitField('Delete')
+
+class TimeForm(FlaskForm):
+    identity = StringField('Identity', validators=[DataRequired()])
+    submit = SubmitField('Access Log')
