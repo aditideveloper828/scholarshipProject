@@ -1,5 +1,6 @@
 # scholarshipProject
-Year 12 & 13 Digital Technologies Scholarship Project
+Year 12 & 13 Digital Technologies Scholarship Project.
+
 Access control for digital technologies lab at high school.
 Mainly written using Flask (Python microframework) and the code is based on https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world 
 
